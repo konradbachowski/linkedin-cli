@@ -100,3 +100,5 @@ post returns `401`: regenerate in the Token Generator, then `linkedin auth --tok
   + `LinkedIn-Version: YYYYMM` header (one line in the `publishPost` helper).
 - Success = HTTP 201 + post URN in the `x-restli-id` header; the CLI prints a
   `https://www.linkedin.com/feed/update/{urn}/` link.
+- For batch scheduling many posts, prefer `--file` over piping each one via stdin. Stdin reading
+  is hardened (blocking read with EAGAIN retry), but `--file` is the most predictable in loops.

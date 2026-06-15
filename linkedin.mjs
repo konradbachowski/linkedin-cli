@@ -3,7 +3,7 @@
 // Zero zaleznosci. Node 18+ (global fetch). Tylko scope w_member_social.
 // Endpoint i flow zweryfikowane z https://learn.microsoft.com/en-us/linkedin/
 
-import { readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
+import { readFileSync, writeFileSync, mkdirSync, existsSync, readSync } from "node:fs";
 import { homedir } from "node:os";
 import { join, dirname } from "node:path";
 import { createServer } from "node:http";
@@ -205,7 +205,7 @@ async function cmdPost(args) {
   // tresc: pozycyjny arg | -f plik | stdin
   let text = args._[0];
   if (args.file && typeof args.file === "string") text = readFileSync(args.file, "utf8");
-  if (!text && !process.stdin.isTTY) text = readFileSync(0, "utf8");
+  if (!text) text = readStdinSafe();
   if (!text || !text.trim()) die("brak tresci. Uzyj: linkedin post \"tekst\"  |  --file post.txt  |  echo tekst | linkedin post");
   text = text.replace(/\s+$/, "");
 
@@ -252,8 +252,22 @@ function sshRun(cfg, cliArgs, stdinText) {
 
 function readStdinSafe() {
   if (process.stdin.isTTY) return null;
-  try { const s = readFileSync(0, "utf8"); return s && s.trim() ? s : null; }
-  catch { return null; }
+  // blokujacy odczyt fd0 z ponawianiem na EAGAIN (stdin bywa non-blocking -> readFileSync(0) gubil tresc)
+  const chunks = [];
+  const buf = Buffer.alloc(65536);
+  while (true) {
+    let n;
+    try { n = readSync(0, buf, 0, buf.length, null); }
+    catch (e) {
+      if (e.code === "EAGAIN") continue;   // chwilowo niegotowy - ponawiamy
+      if (e.code === "EOF") break;
+      return null;
+    }
+    if (n === 0) break;
+    chunks.push(Buffer.from(buf.subarray(0, n)));
+  }
+  const s = Buffer.concat(chunks).toString("utf8");
+  return s && s.trim() ? s : null;
 }
 
 async function cmdSchedule(args) {
