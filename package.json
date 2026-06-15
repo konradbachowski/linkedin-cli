@@ -1,0 +1,32 @@
+{
+  "name": "linkedin-post-cli",
+  "version": "1.0.0",
+  "description": "Dead-simple zero-dependency CLI to publish and schedule text posts on your own LinkedIn profile.",
+  "type": "module",
+  "bin": {
+    "linkedin": "./linkedin.mjs"
+  },
+  "files": [
+    "linkedin.mjs",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "linkedin",
+    "cli",
+    "social",
+    "post",
+    "schedule",
+    "automation",
+    "zero-dependency"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/konradbachowski/linkedin-cli.git"
+  },
+  "author": "Konrad Bachowski",
+  "license": "MIT"
+}
