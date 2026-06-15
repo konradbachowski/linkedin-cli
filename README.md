@@ -152,6 +152,22 @@ Generator and run `linkedin auth --token "..."` again (on the server, if you use
   to any third party — the CLI talks directly to LinkedIn (and, in remote mode, to your own
   server over SSH).
 
+## Agent skill (Claude Code / Codex)
+
+This repo ships an agent skill at [`skills/linkedin/SKILL.md`](skills/linkedin/SKILL.md) so an
+AI coding agent can drive the CLI for you ("schedule a LinkedIn post for tomorrow at 9").
+
+Install it into both agents (keeps them in sync) with the
+[`skills`](https://github.com/vercel-labs/skills) CLI:
+
+```bash
+npx skills add -g -a claude-code -a codex konradbachowski/linkedin-cli
+```
+
+Or copy `skills/linkedin/` into `~/.claude/skills/` (and symlink it into `~/.codex/skills/`)
+manually. The skill is generic — it reads your local `linkedin` config and never embeds any
+token or server details.
+
 ## Commands
 
 | Command | What it does |
